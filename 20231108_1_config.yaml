@@ -1,0 +1,157 @@
+secret: dongtaiwang.com
+mixed-port: 7890
+allow-lan: false
+log-level: info
+dns:
+  enabled: true
+  nameserver:
+    - 119.29.29.29
+    - 223.5.5.5
+  fallback:
+    - 8.8.8.8
+    - 8.8.4.4
+    - tls://1.0.0.1:853
+    - tls://dns.google:853
+proxies:
+  - name: ip1 
+    server: 109.104.152.219
+    port: 19008
+    type: tuic
+    uuid: 9f8c2f3e-cb9e-410f-9b87-f1615ac1a1bb
+    password: dongtaiwang.com
+    sni: bing.com
+    alpn: [h3]
+    request-timeout: 8000
+    udp-relay-mode: native
+    skip-cert-verify: true
+    congestion-controller: bbr
+  - name: ip2
+    type: hysteria2
+    server: 167.160.90.251
+    port: 10981
+    password: i2XRv7zj1uWE
+    alpn:
+      - h3
+    sni: bing.com
+    skip-cert-verify: true
+    up: "100 Mbps"
+    down: "100 Mbps"
+proxy-groups:
+  - name: 🚀 节点选择
+    type: select
+    proxies:
+      - ♻️ 自动选择
+      - DIRECT
+      - ip1
+      - ip2
+  - name: ♻️ 自动选择
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies:
+      - ip1
+      - ip2
+  - name: 🌍 国外媒体
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - ♻️ 自动选择
+      - 🎯 全球直连
+      - ip1
+      - ip2
+  - name: 📲 电报信息
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - 🎯 全球直连
+      - ip1
+      - ip2
+  - name: Ⓜ️ 微软服务
+    type: select
+    proxies:
+      - 🎯 全球直连
+      - 🚀 节点选择
+      - ip1
+      - ip2
+  - name: 🍎 苹果服务
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - 🎯 全球直连
+      - ip1
+      - ip2
+  - name: 🎯 全球直连
+    type: select
+    proxies:
+      - DIRECT
+      - 🚀 节点选择
+      - ♻️ 自动选择
+  - name: 🛑 全球拦截
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+  - name: 🍃 应用净化
+    type: select
+    proxies:
+      - REJECT
+      - DIRECT
+  - name: 🐟 漏网之鱼
+    type: select
+    proxies:
+      - 🚀 节点选择
+      - 🎯 全球直连
+      - ♻️ 自动选择
+      - ip1
+      - ip2
+
+rules:
+# 本地/局域网地址
+# 参考：https://en.wikipedia.org/wiki/Reserved_IP_addresses
+# ACL4SSR标志 如没有，代表不是用ACL4SSR规则
+# 本地/局域网地址
+# Router managed 路由器管理域名
+  - DOMAIN-SUFFIX,local,DIRECT
+  - IP-CIDR,192.168.0.0/16,DIRECT,no-resolve
+  - IP-CIDR,10.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,172.16.0.0/12,DIRECT,no-resolve
+  - IP-CIDR,127.0.0.0/8,DIRECT,no-resolve
+  - IP-CIDR,100.64.0.0/10,DIRECT,no-resolve
+  - IP-CIDR6,::1/128,DIRECT,no-resolve
+  - IP-CIDR6,fc00::/7,DIRECT,no-resolve
+  - IP-CIDR6,fe80::/10,DIRECT,no-resolve
+  - IP-CIDR6,fd00::/8,DIRECT,no-resolve
+
+# 微软相关的网站走代理
+  - DOMAIN-SUFFIX,microsoft.com,🚀 节点选择
+  - DOMAIN-SUFFIX,microsoftonline.com,🚀 节点选择
+  - DOMAIN-SUFFIX,windows.com,🚀 节点选择
+  - DOMAIN-SUFFIX,windowsupdate.com,🚀 节点选择
+  - DOMAIN-SUFFIX,xbox.com,🚀 节点选择
+
+# Bing相关的网站走代理
+  - DOMAIN-SUFFIX,bing.com,🚀 节点选择
+  - DOMAIN-SUFFIX,bingspeech.platform.bing.com,🚀 节点选择
+
+# Google相关的网站走代理
+  - DOMAIN-SUFFIX,google.com,🚀 节点选择
+  - DOMAIN-SUFFIX,gmail.com,🚀 节点选择
+  - DOMAIN-SUFFIX,youtube.com,🚀 节点选择
+
+# Claude.ai相关的网站走代理
+  - DOMAIN-SUFFIX,claude.ai,🚀 节点选择
+
+# 无分类
+  - DOMAIN-SUFFIX,twitter.com,🚀 节点选择
+  - DOMAIN-SUFFIX,facebook.com,🚀 节点选择
+  - DOMAIN-SUFFIX,wikipedia.org,🚀 节点选择
+  - DOMAIN-SUFFIX,amazon.com,🚀 节点选择
+  - DOMAIN-SUFFIX,netflix.com,🚀 节点选择
+  - DOMAIN-SUFFIX,instagram.com,🚀 节点选择
+  - DOMAIN-SUFFIX,github.com,🚀 节点选择
+  - DOMAIN-SUFFIX,quora.com,🚀 节点选择
+  - DOMAIN-SUFFIX,stackoverflow.com,🚀 节点选择
+  
+# 其他的都直连
+  - MATCH,DIRECT
